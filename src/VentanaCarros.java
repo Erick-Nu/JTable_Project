@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.table.DefaultTableModel;
@@ -11,6 +12,7 @@ public class VentanaCarros {
     private JButton btnEliminar;
     private JButton btnUpdate;
     public JPanel VentanaOne;
+    private JButton btnAdd;
 
     private final String url = "jdbc:mysql://localhost:3306/CarCenter";
     private final String username = "root";
@@ -53,6 +55,24 @@ public class VentanaCarros {
             @Override
             public void actionPerformed(ActionEvent e) {
                 actualizarCarro();
+            }
+        });
+        btnAdd.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame currentFrame = (JFrame) SwingUtilities.getWindowAncestor(VentanaOne);
+                if (currentFrame != null) {
+                    currentFrame.dispose();
+                }
+
+                JFrame carrosFrame = new JFrame("Agregar Carros");
+                carrosFrame.setContentPane(new VentanaIngreso().VentanaIngreso);
+                carrosFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                carrosFrame.setSize(800, 600); // Tamaño fijo
+                carrosFrame.setPreferredSize(new Dimension(800, 600));
+                carrosFrame.pack();
+                carrosFrame.setVisible(true);
+
             }
         });
     }
