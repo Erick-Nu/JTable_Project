@@ -12,7 +12,7 @@ public class VentanaCarros {
     private JButton btnEliminar;
     private JButton btnUpdate;
     public JPanel VentanaOne;
-    private JButton btnAdd;
+    public JButton btnAdd;
 
     private final String url = "jdbc:mysql://localhost:3306/CarCenter";
     private final String username = "root";
@@ -57,22 +57,22 @@ public class VentanaCarros {
                 actualizarCarro();
             }
         });
+
+
         btnAdd.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFrame currentFrame = (JFrame) SwingUtilities.getWindowAncestor(VentanaOne);
-                if (currentFrame != null) {
-                    currentFrame.dispose();
-                }
 
-                JFrame carrosFrame = new JFrame("Agregar Carros");
-                carrosFrame.setContentPane(new VentanaIngreso().VentanaIngreso);
-                carrosFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                carrosFrame.setSize(800, 600); // Tamaño fijo
-                carrosFrame.setPreferredSize(new Dimension(800, 600));
-                carrosFrame.pack();
-                carrosFrame.setVisible(true);
+                JFrame CarrosFrame = (JFrame) SwingUtilities.getWindowAncestor(VentanaOne);
+                CarrosFrame.dispose();
 
+                JFrame loginFrame = new JFrame("Agregar Carro");
+                loginFrame.setContentPane(new VentanaIngreso().VentanaIngreso);
+                loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                loginFrame.setSize(800, 600);
+                loginFrame.setPreferredSize(new Dimension(800, 600));
+                loginFrame.pack();
+                loginFrame.setVisible(true);
             }
         });
     }

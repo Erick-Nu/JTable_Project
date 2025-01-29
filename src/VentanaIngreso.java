@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.*;
 import javax.swing.table.DefaultTableModel;
 
 public class VentanaIngreso {
@@ -16,6 +17,43 @@ public class VentanaIngreso {
     private JTable table1;
     public JPanel VentanaIngreso;
 
+    private final String url = "jdbc:mysql://localhost:3306/CarCenter";
+    private final String username = "root";
+    private final String password = "1234";
+
+    private Connection getConnection() {
+        try {
+            return DriverManager.getConnection(url, username, password);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error de conexión a la base de datos: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private void saveDatos(String marca, String modelo, int stock, String color, double precio, int year) {
+        String sql = "INSERT INTO CARROS (MARCA, MODELO, YEARS, PRECIO, COLOR, STOCK) VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (Connection connection = getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            // Insertar los valores dinámicos
+            stmt.setString(1, marca);
+            stmt.setString(2, modelo);
+            stmt.setInt(3, year);
+            stmt.setDouble(4, precio);
+            stmt.setString(5, color);
+            stmt.setInt(6, stock);
+
+            // Ejecutar la consulta
+            stmt.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Datos guardados correctamente.");
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al guardar los datos: " + e.getMessage());
+        }
+    }
+
+
     public VentanaIngreso() {
         /* Declaración del modelo de la tabla */
         DefaultTableModel modelo = new DefaultTableModel();
@@ -25,10 +63,6 @@ public class VentanaIngreso {
         btnRegresar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Crear una instancia de la ventana VentanaCarros
-                JFrame CarrosFrame = (JFrame) SwingUtilities.getWindowAncestor(VentanaIngreso);
-                CarrosFrame.dispose();
-
                 JFrame loginFrame = new JFrame("Carros");
                 loginFrame.setContentPane(new VentanaCarros().VentanaOne);
                 loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -71,11 +105,12 @@ public class VentanaIngreso {
                     textPrecio.setText("");
                     textYear.setText("");
 
-                    JOptionPane.showMessageDialog(null, "Carro agregado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    saveDatos(marca, modeloTexto, stock, color,precio, year);
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(null, "Por favor, ingresa valores válidos.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
+
     }
 }
