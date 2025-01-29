@@ -63,6 +63,9 @@ public class VentanaIngreso {
         btnRegresar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                JFrame CarrosFrame = (JFrame) SwingUtilities.getWindowAncestor(VentanaIngreso);
+                CarrosFrame.dispose();
+
                 JFrame loginFrame = new JFrame("Carros");
                 loginFrame.setContentPane(new VentanaCarros().VentanaOne);
                 loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -105,7 +108,7 @@ public class VentanaIngreso {
                     textPrecio.setText("");
                     textYear.setText("");
 
-                    saveDatos(marca, modeloTexto, stock, color,precio, year);
+                    saveDatos(marca, modeloTexto, stock, color, precio, year);
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(null, "Por favor, ingresa valores válidos.", "Error", JOptionPane.ERROR_MESSAGE);
                 }

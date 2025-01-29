@@ -70,7 +70,7 @@ public class VentanaCarros {
                 loginFrame.setContentPane(new VentanaIngreso().VentanaIngreso);
                 loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 loginFrame.setSize(800, 600);
-                loginFrame.setPreferredSize(new Dimension(800, 600));
+                loginFrame.setPreferredSize(new Dimension(800, 1500));
                 loginFrame.pack();
                 loginFrame.setVisible(true);
             }

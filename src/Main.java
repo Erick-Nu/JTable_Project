@@ -8,7 +8,7 @@ public class Main {
         loginFrame.setContentPane(new VentanaCarros().VentanaOne);
         loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         loginFrame.setSize(800, 600);
-        loginFrame.setPreferredSize(new Dimension(800, 600));
+        loginFrame.setPreferredSize(new Dimension(800, 400));
         loginFrame.pack();
         loginFrame.setVisible(true);
     }
