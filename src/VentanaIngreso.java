@@ -19,7 +19,7 @@ public class VentanaIngreso {
 
     private final String url = "jdbc:mysql://localhost:3306/CarCenter";
     private final String username = "root";
-    private final String password = "1234";
+    private final String password = "root";
 
     private Connection getConnection() {
         try {
@@ -69,8 +69,8 @@ public class VentanaIngreso {
                 JFrame loginFrame = new JFrame("Carros");
                 loginFrame.setContentPane(new VentanaCarros().VentanaOne);
                 loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                loginFrame.setSize(800, 600);
-                loginFrame.setPreferredSize(new Dimension(800, 400));
+                loginFrame.setSize(1024, 768);
+                loginFrame.setPreferredSize(new Dimension(1024, 768));
                 loginFrame.pack();
                 loginFrame.setVisible(true);
             }

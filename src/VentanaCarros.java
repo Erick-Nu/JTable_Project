@@ -16,7 +16,7 @@ public class VentanaCarros {
 
     private final String url = "jdbc:mysql://localhost:3306/CarCenter";
     private final String username = "root";
-    private final String password = "1234";
+    private final String password = "root";
 
     private Connection getConnection() {
         try {
@@ -69,8 +69,8 @@ public class VentanaCarros {
                 JFrame loginFrame = new JFrame("Agregar Carro");
                 loginFrame.setContentPane(new VentanaIngreso().VentanaIngreso);
                 loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                loginFrame.setSize(800, 600);
-                loginFrame.setPreferredSize(new Dimension(800, 1500));
+                loginFrame.setSize(1024, 768);
+                loginFrame.setPreferredSize(new Dimension(768, 1360));
                 loginFrame.pack();
                 loginFrame.setVisible(true);
             }
@@ -136,67 +136,136 @@ public class VentanaCarros {
         }
     }
 
-    // Metodo eliminar carros
     private void eliminarCarro() {
         int filaSeleccionada = tablaCarros.getSelectedRow();
         if (filaSeleccionada == -1) {
-            JOptionPane.showMessageDialog(null, "Por favor, seleccione un carro para eliminar.");
+            JOptionPane.showMessageDialog(null, "Por favor, seleccione un auto para eliminar.");
             return;
         }
 
+        // Obtener el ID del carro seleccionado
         int id = (int) tablaCarros.getValueAt(filaSeleccionada, 0);
 
-        try (Connection connection = getConnection();
-             PreparedStatement ps = connection.prepareStatement("DELETE FROM carros WHERE ID = ?")) {
+        // Mostrar el cuadro de confirmación
+        int confirmacion = JOptionPane.showConfirmDialog(null,
+                "¿Estás seguro de que quieres eliminar este Auto?",
+                "Confirmar eliminación",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
 
-            ps.setInt(1, id);
+        // Si el usuario hace clic en "Sí", proceder con la eliminación
+        if (confirmacion == JOptionPane.YES_OPTION) {
+            try (Connection connection = getConnection();
+                 PreparedStatement ps = connection.prepareStatement("DELETE FROM carros WHERE ID = ?")) {
 
-            int resultado = ps.executeUpdate();
-            if (resultado > 0) {
-                JOptionPane.showMessageDialog(null, "Carro eliminado exitosamente.");
-                cargarDatos();
-            } else {
-                JOptionPane.showMessageDialog(null, "Error al eliminar el carro.");
+                ps.setInt(1, id);
+                int resultado = ps.executeUpdate();
+
+                if (resultado > 0) {
+                    JOptionPane.showMessageDialog(null, "Auto eliminado exitosamente.");
+                    cargarDatos();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Error al eliminar el auto.");
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, "Error al eliminar el auto: " + e.getMessage());
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al eliminar el carro: " + e.getMessage());
+        } else {
+            // Si el usuario hace clic en "No", no hacer nada
+            JOptionPane.showMessageDialog(null, "Operación cancelada.");
         }
     }
-    // Metodo actualizar carros
+
+    // Método para actualizar carros
     private void actualizarCarro() {
         int filaSeleccionada = tablaCarros.getSelectedRow();
         if (filaSeleccionada == -1) {
-            JOptionPane.showMessageDialog(null, "Por favor, seleccione un carro para actualizar.");
+            JOptionPane.showMessageDialog(null, "Por favor, seleccione un auto para actualizar los datos.");
             return;
         }
 
         int id = (int) tablaCarros.getValueAt(filaSeleccionada, 0);
-        String nuevaMarca = JOptionPane.showInputDialog("Nueva marca:", tablaCarros.getValueAt(filaSeleccionada, 1));
-        String nuevoModelo = JOptionPane.showInputDialog("Nuevo modelo:", tablaCarros.getValueAt(filaSeleccionada, 2));
 
-        if (nuevaMarca == null || nuevoModelo == null) {
-            JOptionPane.showMessageDialog(null, "Actualización cancelada.");
+        // Obtener valores originales de la tabla
+        String marcaOriginal = (String) tablaCarros.getValueAt(filaSeleccionada, 1);
+        String modeloOriginal = (String) tablaCarros.getValueAt(filaSeleccionada, 2);
+        int yearOriginal = (int) tablaCarros.getValueAt(filaSeleccionada, 3);
+        double precioOriginal = (double) tablaCarros.getValueAt(filaSeleccionada, 4);
+        String colorOriginal = (String) tablaCarros.getValueAt(filaSeleccionada, 5);
+        int stockOriginal = (int) tablaCarros.getValueAt(filaSeleccionada, 6);
+
+        // Pedir nuevos datos
+        String nuevaMarca = JOptionPane.showInputDialog("Ingrese la marca:", marcaOriginal);
+        String nuevoModelo = JOptionPane.showInputDialog("Ingrese el modelo:", modeloOriginal);
+        String nuevoYearStr = JOptionPane.showInputDialog("Ingrese el año:", yearOriginal);
+        String nuevoPrecioStr = JOptionPane.showInputDialog("Ingrese el precio:", precioOriginal);
+        String nuevoColor = JOptionPane.showInputDialog("Ingrese el color:", colorOriginal);
+        String nuevoStockStr = JOptionPane.showInputDialog("Ingrese el stock:", stockOriginal);
+
+        // Si el usuario cancela o deja el campo en blanco, se utiliza el dato original
+        nuevaMarca = (nuevaMarca != null && !nuevaMarca.isEmpty()) ? nuevaMarca : marcaOriginal;
+        nuevoModelo = (nuevoModelo != null && !nuevoModelo.isEmpty()) ? nuevoModelo : modeloOriginal;
+        nuevoColor = (nuevoColor != null && !nuevoColor.isEmpty()) ? nuevoColor : colorOriginal;
+
+        // Convertir los valores numéricos si no están vacíos
+        int nuevoYear = yearOriginal;
+        double nuevoPrecio = precioOriginal;
+        int nuevoStock = stockOriginal;
+
+        try {
+            if (nuevoYearStr != null && !nuevoYearStr.isEmpty()) {
+                nuevoYear = Integer.parseInt(nuevoYearStr);
+            }
+            if (nuevoPrecioStr != null && !nuevoPrecioStr.isEmpty()) {
+                nuevoPrecio = Double.parseDouble(nuevoPrecioStr);
+            }
+            if (nuevoStockStr != null && !nuevoStockStr.isEmpty()) {
+                nuevoStock = Integer.parseInt(nuevoStockStr);
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Error: El Año, Precio y Stock deben ser valores numéricos válidos.");
             return;
         }
 
+        // Para verificar si el usuario modificó algún dato
+        if (nuevaMarca.equals(marcaOriginal) &&
+                nuevoModelo.equals(modeloOriginal) &&
+                nuevoYear == yearOriginal &&
+                nuevoPrecio == precioOriginal &&
+                nuevoColor.equals(colorOriginal) &&
+                nuevoStock == stockOriginal) {
+
+            JOptionPane.showMessageDialog(null, "No se realizaron cambios.");
+            return;
+        }
+
+        // Ejecutar la actualización en la base de datos
         try (Connection connection = getConnection();
-             PreparedStatement ps = connection.prepareStatement("UPDATE carros SET MARCA = ?, MODELO = ? WHERE ID = ?")) {
+             PreparedStatement ps = connection.prepareStatement(
+                     "UPDATE carros SET MARCA = ?, MODELO = ?, YEARS = ?, PRECIO = ?, COLOR = ?, STOCK = ? WHERE ID = ?")) {
 
             ps.setString(1, nuevaMarca);
             ps.setString(2, nuevoModelo);
-            ps.setInt(3, id);
+            ps.setInt(3, nuevoYear);
+            ps.setDouble(4, nuevoPrecio);
+            ps.setString(5, nuevoColor);
+            ps.setInt(6, nuevoStock);
+            ps.setInt(7, id);
 
             int resultado = ps.executeUpdate();
             if (resultado > 0) {
-                JOptionPane.showMessageDialog(null, "Carro actualizado exitosamente.");
+                JOptionPane.showMessageDialog(null, "Auto actualizado exitosamente.");
                 cargarDatos();
             } else {
-                JOptionPane.showMessageDialog(null, "Error al actualizar el carro.");
+                JOptionPane.showMessageDialog(null, "Error al actualizar el auto.");
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al actualizar el carro: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error al actualizar el auto: " + e.getMessage());
         }
     }
 
 
 }
+
+
+
